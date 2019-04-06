@@ -16,6 +16,9 @@ setup-protobuf-macos:
 	@brew install protobuf
 	@go get github.com/golang/protobuf/protoc-gen-go
 
+run-app-frontend:
+	@docker-compose up -d etcd nats && go run app.go
+
 run-chat-example:
 	@cd examples/testing && docker-compose up -d etcd nats && cd ../demo/chat/ && go run main.go
 
