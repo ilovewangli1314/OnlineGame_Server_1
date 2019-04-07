@@ -62,7 +62,7 @@ func main() {
 		component.WithName("room"),
 		component.WithNameFunc(strings.ToLower),
 	)
-	ws := acceptor.NewWSAcceptor(fmt.Sprintf(":%d", port))
+	ws := acceptor.NewWSAcceptor(fmt.Sprintf(":%d", *port))
 	pitaya.AddAcceptor(ws)
 	// pitaya.RegisterRemote(room,
 	// 	component.WithName("room"),
