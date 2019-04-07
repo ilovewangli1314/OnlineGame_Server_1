@@ -19,9 +19,9 @@ setup-protobuf-macos:
 # run-app-frontend:
 # 	@docker-compose up -d etcd nats && go run app.go
 run-app-frontend:
-	@go run main.go
+	@go run app.go
 run-app-backend:
-	@go run main.go --port 3251 --type room --frontend=false
+	@go run app.go --port 3251 --type room --frontend=false
 
 run-chat-example:
 	@cd examples/testing && docker-compose up -d etcd nats && cd ../demo/chat/ && go run main.go
