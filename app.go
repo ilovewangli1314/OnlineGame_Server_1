@@ -57,7 +57,17 @@ func main() {
 	// } else {
 	// 	configureFrontend(*port)
 	// }
-	configureBackend()
+	room := services.NewRoom()
+	pitaya.Register(room,
+		component.WithName("room"),
+		component.WithNameFunc(strings.ToLower),
+	)
+	ws := acceptor.NewWSAcceptor(fmt.Sprintf(":%d", port))
+	pitaya.AddAcceptor(ws)
+	// pitaya.RegisterRemote(room,
+	// 	component.WithName("room"),
+	// 	component.WithNameFunc(strings.ToLower),
+	// )
 
 	conf := configApp()
 	pitaya.Configure(*isFrontend, *svType, pitaya.Cluster, map[string]string{}, conf)
