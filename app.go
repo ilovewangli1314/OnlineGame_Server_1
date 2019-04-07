@@ -76,7 +76,7 @@ func main() {
 
 func configApp() *viper.Viper {
 	conf := viper.New()
-	// conf.SetEnvPrefix("chat") // allows using env vars in the CHAT_PITAYA_ format
+	conf.SetEnvPrefix("room") // allows using env vars in the CHAT_PITAYA_ format
 	conf.SetDefault("pitaya.buffer.handler.localprocess", 15)
 	conf.Set("pitaya.heartbeat.interval", "15s")
 	conf.Set("pitaya.buffer.agent.messages", 32)
