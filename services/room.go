@@ -107,10 +107,9 @@ func (r *Room) Join(ctx context.Context) (*room.JoinResponse, error) {
 
 		// Fixme: 临时处理
 		members, err := pitaya.GroupMembers(ctx, "room")
-		if err != nil {
-			return nil, err
+		if err == nil {
+			s.Push("onMembers", &protos.AllMembers{Members: members})
 		}
-		s.Push("onMembers", &protos.AllMembers{Members: members})
 	})
 	return &room.JoinResponse{Code: 0}, nil
 }
