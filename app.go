@@ -11,6 +11,7 @@ import (
 	"github.com/topfreegames/pitaya/component"
 	"github.com/topfreegames/pitaya/examples/demo/cluster_protobuf/services"
 	"github.com/topfreegames/pitaya/serialize/protobuf"
+	"github.com/topfreegames/OnlineGame_Server_1/services"
 )
 
 func configureBackend() {
@@ -41,24 +42,34 @@ func configureFrontend(port int) {
 }
 
 func main() {
+	defer pitaya.Shutdown()
+
 	port := flag.Int("port", 3250, "the port to listen")
 	svType := flag.String("type", "connector", "the server type")
 	isFrontend := flag.Bool("frontend", true, "if server is frontend")
-
 	flag.Parse()
 
-	defer pitaya.Shutdown()
-
 	ser := protobuf.NewSerializer()
-
 	pitaya.SetSerializer(ser)
 
-	if !*isFrontend {
-		configureBackend()
-	} else {
-		configureFrontend(*port)
-	}
+	// if !*isFrontend {
+	// 	configureBackend()
+	// } else {
+	// 	configureFrontend(*port)
+	// }
+	configureBackend()
 
-	pitaya.Configure(*isFrontend, *svType, pitaya.Cluster, map[string]string{})
+	conf := configApp()
+	pitaya.Configure(*isFrontend, *svType, pitaya.Cluster, map[string]string{}, conf)
 	pitaya.Start()
+}
+
+func configApp() *viper.Viper {
+	conf := viper.New()
+	// conf.SetEnvPrefix("chat") // allows using env vars in the CHAT_PITAYA_ format
+	conf.SetDefault("pitaya.buffer.handler.localprocess", 15)
+	conf.Set("pitaya.heartbeat.interval", "15s")
+	conf.Set("pitaya.buffer.agent.messages", 32)
+	conf.Set("pitaya.handler.messages.compression", false)
+	return conf
 }
