@@ -87,7 +87,13 @@ func (r *Room) Entry(ctx context.Context) (*protos.Response, error) {
 
 // Join room
 func (r *Room) Join(ctx context.Context) (*room.JoinResponse, error) {
+	fakeUID := uuid.New().String() // just use s.ID as uid !!!
 	s := pitaya.GetSessionFromCtx(ctx)
+	err := s.Bind(ctx, fakeUID) // binding session uid
+	if err != nil {
+		return nil, pitaya.Error(err, "ENT-000")
+	}
+	
 	members, err := pitaya.GroupMembers(ctx, "room")
 	if err != nil {
 		return nil, err
