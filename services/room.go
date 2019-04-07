@@ -12,6 +12,7 @@ import (
 	"github.com/topfreegames/pitaya/groups"
 	"github.com/topfreegames/pitaya/timer"
 	"github.com/ilovewangli1314/OnlineGame_Server_1/protos"
+	"github.com/ilovewangli1314/OnlineGame_Server_1/protos/room"
 )
 
 type (
@@ -97,7 +98,7 @@ func (r *Room) Join(ctx context.Context) (*protos.Response, error) {
 	s.OnClose(func() {
 		pitaya.GroupRemoveMember(ctx, "room", s.UID())
 	})
-	return &protos.Response{Msg: "success"}, nil
+	return &room.JoinResponse{Code: 0}, nil
 }
 
 // Message sync last message to all members
