@@ -86,7 +86,7 @@ func (r *Room) Entry(ctx context.Context) (*protos.Response, error) {
 }
 
 // Join room
-func (r *Room) Join(ctx context.Context) (*protos.Response, error) {
+func (r *Room) Join(ctx context.Context) (*room.JoinResponse, error) {
 	s := pitaya.GetSessionFromCtx(ctx)
 	members, err := pitaya.GroupMembers(ctx, "room")
 	if err != nil {
