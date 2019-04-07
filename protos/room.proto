@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package game;
+package room;
 
 message Hero {
   int32 Id = 1;
