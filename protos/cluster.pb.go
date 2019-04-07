@@ -31,7 +31,7 @@ func (m *Response) Reset()         { *m = Response{} }
 func (m *Response) String() string { return proto.CompactTextString(m) }
 func (*Response) ProtoMessage()    {}
 func (*Response) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cluster_95360d360239b954, []int{0}
+	return fileDescriptor_cluster_25d1edf246d17cb4, []int{0}
 }
 func (m *Response) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Response.Unmarshal(m, b)
@@ -78,7 +78,7 @@ func (m *UserMessage) Reset()         { *m = UserMessage{} }
 func (m *UserMessage) String() string { return proto.CompactTextString(m) }
 func (*UserMessage) ProtoMessage()    {}
 func (*UserMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cluster_95360d360239b954, []int{1}
+	return fileDescriptor_cluster_25d1edf246d17cb4, []int{1}
 }
 func (m *UserMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserMessage.Unmarshal(m, b)
@@ -124,7 +124,7 @@ func (m *NewUser) Reset()         { *m = NewUser{} }
 func (m *NewUser) String() string { return proto.CompactTextString(m) }
 func (*NewUser) ProtoMessage()    {}
 func (*NewUser) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cluster_95360d360239b954, []int{2}
+	return fileDescriptor_cluster_25d1edf246d17cb4, []int{2}
 }
 func (m *NewUser) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_NewUser.Unmarshal(m, b)
@@ -163,7 +163,7 @@ func (m *RPCMsg) Reset()         { *m = RPCMsg{} }
 func (m *RPCMsg) String() string { return proto.CompactTextString(m) }
 func (*RPCMsg) ProtoMessage()    {}
 func (*RPCMsg) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cluster_95360d360239b954, []int{3}
+	return fileDescriptor_cluster_25d1edf246d17cb4, []int{3}
 }
 func (m *RPCMsg) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RPCMsg.Unmarshal(m, b)
@@ -209,7 +209,7 @@ func (m *AllMembers) Reset()         { *m = AllMembers{} }
 func (m *AllMembers) String() string { return proto.CompactTextString(m) }
 func (*AllMembers) ProtoMessage()    {}
 func (*AllMembers) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cluster_95360d360239b954, []int{4}
+	return fileDescriptor_cluster_25d1edf246d17cb4, []int{4}
 }
 func (m *AllMembers) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AllMembers.Unmarshal(m, b)
@@ -244,9 +244,9 @@ func init() {
 	proto.RegisterType((*AllMembers)(nil), "protos.AllMembers")
 }
 
-func init() { proto.RegisterFile("cluster.proto", fileDescriptor_cluster_95360d360239b954) }
+func init() { proto.RegisterFile("cluster.proto", fileDescriptor_cluster_25d1edf246d17cb4) }
 
-var fileDescriptor_cluster_95360d360239b954 = []byte{
+var fileDescriptor_cluster_25d1edf246d17cb4 = []byte{
 	// 192 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x8f, 0x31, 0xab, 0x83, 0x30,
 	0x14, 0x85, 0xc9, 0xf3, 0xa9, 0xcf, 0xfb, 0x28, 0x94, 0xd0, 0x21, 0xa3, 0x58, 0x28, 0x4e, 0x45,

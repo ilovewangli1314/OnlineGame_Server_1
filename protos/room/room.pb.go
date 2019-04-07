@@ -3,11 +3,9 @@
 
 package room
 
-import (
-	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
-	math "math"
-)
+import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -18,7 +16,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type Hero struct {
 	Id                   int32    `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
@@ -35,17 +33,16 @@ func (m *Hero) Reset()         { *m = Hero{} }
 func (m *Hero) String() string { return proto.CompactTextString(m) }
 func (*Hero) ProtoMessage()    {}
 func (*Hero) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{0}
+	return fileDescriptor_room_935b1ba31a15ce1d, []int{0}
 }
-
 func (m *Hero) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Hero.Unmarshal(m, b)
 }
 func (m *Hero) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_Hero.Marshal(b, m, deterministic)
 }
-func (m *Hero) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Hero.Merge(m, src)
+func (dst *Hero) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Hero.Merge(dst, src)
 }
 func (m *Hero) XXX_Size() int {
 	return xxx_messageInfo_Hero.Size(m)
@@ -102,17 +99,16 @@ func (m *Scene) Reset()         { *m = Scene{} }
 func (m *Scene) String() string { return proto.CompactTextString(m) }
 func (*Scene) ProtoMessage()    {}
 func (*Scene) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{1}
+	return fileDescriptor_room_935b1ba31a15ce1d, []int{1}
 }
-
 func (m *Scene) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Scene.Unmarshal(m, b)
 }
 func (m *Scene) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_Scene.Marshal(b, m, deterministic)
 }
-func (m *Scene) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Scene.Merge(m, src)
+func (dst *Scene) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Scene.Merge(dst, src)
 }
 func (m *Scene) XXX_Size() int {
 	return xxx_messageInfo_Scene.Size(m)
@@ -143,17 +139,16 @@ func (m *Action) Reset()         { *m = Action{} }
 func (m *Action) String() string { return proto.CompactTextString(m) }
 func (*Action) ProtoMessage()    {}
 func (*Action) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{2}
+	return fileDescriptor_room_935b1ba31a15ce1d, []int{2}
 }
-
 func (m *Action) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Action.Unmarshal(m, b)
 }
 func (m *Action) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_Action.Marshal(b, m, deterministic)
 }
-func (m *Action) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Action.Merge(m, src)
+func (dst *Action) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Action.Merge(dst, src)
 }
 func (m *Action) XXX_Size() int {
 	return xxx_messageInfo_Action.Size(m)
@@ -195,17 +190,16 @@ func (m *JoinRequest) Reset()         { *m = JoinRequest{} }
 func (m *JoinRequest) String() string { return proto.CompactTextString(m) }
 func (*JoinRequest) ProtoMessage()    {}
 func (*JoinRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{3}
+	return fileDescriptor_room_935b1ba31a15ce1d, []int{3}
 }
-
 func (m *JoinRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_JoinRequest.Unmarshal(m, b)
 }
 func (m *JoinRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_JoinRequest.Marshal(b, m, deterministic)
 }
-func (m *JoinRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_JoinRequest.Merge(m, src)
+func (dst *JoinRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_JoinRequest.Merge(dst, src)
 }
 func (m *JoinRequest) XXX_Size() int {
 	return xxx_messageInfo_JoinRequest.Size(m)
@@ -227,17 +221,16 @@ func (m *JoinResponse) Reset()         { *m = JoinResponse{} }
 func (m *JoinResponse) String() string { return proto.CompactTextString(m) }
 func (*JoinResponse) ProtoMessage()    {}
 func (*JoinResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{4}
+	return fileDescriptor_room_935b1ba31a15ce1d, []int{4}
 }
-
 func (m *JoinResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_JoinResponse.Unmarshal(m, b)
 }
 func (m *JoinResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_JoinResponse.Marshal(b, m, deterministic)
 }
-func (m *JoinResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_JoinResponse.Merge(m, src)
+func (dst *JoinResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_JoinResponse.Merge(dst, src)
 }
 func (m *JoinResponse) XXX_Size() int {
 	return xxx_messageInfo_JoinResponse.Size(m)
@@ -263,9 +256,9 @@ func init() {
 	proto.RegisterType((*JoinResponse)(nil), "room.JoinResponse")
 }
 
-func init() { proto.RegisterFile("room.proto", fileDescriptor_c5fd27dd97284ef4) }
+func init() { proto.RegisterFile("room.proto", fileDescriptor_room_935b1ba31a15ce1d) }
 
-var fileDescriptor_c5fd27dd97284ef4 = []byte{
+var fileDescriptor_room_935b1ba31a15ce1d = []byte{
 	// 234 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x90, 0xbf, 0x4e, 0xc3, 0x30,
 	0x10, 0xc6, 0x95, 0x34, 0x09, 0xe2, 0x5a, 0x18, 0x6e, 0x40, 0x1e, 0x18, 0x22, 0x4f, 0x65, 0xe9,
