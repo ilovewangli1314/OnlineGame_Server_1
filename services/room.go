@@ -93,7 +93,7 @@ func (r *Room) Join(ctx context.Context) (*room.JoinResponse, error) {
 	if err != nil {
 		return nil, pitaya.Error(err, "ENT-000")
 	}
-	
+
 	members, err := pitaya.GroupMembers(ctx, "room")
 	if err != nil {
 		return nil, err
@@ -104,6 +104,13 @@ func (r *Room) Join(ctx context.Context) (*room.JoinResponse, error) {
 	pitaya.GroupAddMember(ctx, "room", s.UID())
 	s.OnClose(func() {
 		pitaya.GroupRemoveMember(ctx, "room", s.UID())
+
+		// Fixme: 临时处理
+		members, err := pitaya.GroupMembers(ctx, "room")
+		if err != nil {
+			return nil, err
+		}
+		s.Push("onMembers", &protos.AllMembers{Members: members})
 	})
 	return &room.JoinResponse{Code: 0}, nil
 }
