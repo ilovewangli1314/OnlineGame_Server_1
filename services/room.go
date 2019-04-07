@@ -93,7 +93,8 @@ func (r *Room) Join(ctx context.Context) (*room.JoinResponse, error) {
 		return nil, err
 	}
 	s.Push("onMembers", &protos.AllMembers{Members: members})
-	pitaya.GroupBroadcast(ctx, "connector", "room", "onNewUser", &protos.NewUser{Content: fmt.Sprintf("New user: %d", s.ID())})
+	// pitaya.GroupBroadcast(ctx, "connector", "room", "onNewUser", &protos.NewUser{Content: fmt.Sprintf("New user: %d", s.ID())})
+	pitaya.GroupBroadcast(ctx, "room", "room", "onNewUser", &protos.NewUser{Content: fmt.Sprintf("New user: %d", s.ID())})
 	pitaya.GroupAddMember(ctx, "room", s.UID())
 	s.OnClose(func() {
 		pitaya.GroupRemoveMember(ctx, "room", s.UID())
