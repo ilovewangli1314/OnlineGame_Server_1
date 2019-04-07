@@ -11,11 +11,18 @@ message Hero {
 }
 
 message Scene {
-  repeated Hero heros = 1;
+  repeated Hero Heros = 1;
 }
 
 message Action {
-  int32 srcHeroId = 1;
-  int32 targetHeroId = 2;
-  int32 skillType = 3;
+  int32 SrcHeroId = 1;
+  int32 TargetHeroId = 2;
+  int32 SkillType = 3;
+}
+
+message JoinRequest {
+}
+
+message JoinResponse {
+  int32 Code = 1;
 }
