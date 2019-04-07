@@ -11,7 +11,7 @@ import (
 	"github.com/topfreegames/pitaya/component"
 	"github.com/topfreegames/pitaya/examples/demo/cluster_protobuf/services"
 	"github.com/topfreegames/pitaya/serialize/protobuf"
-	"github.com/topfreegames/OnlineGame_Server_1/services"
+	"github.com/ilovewangli1314/OnlineGame_Server_1/services"
 )
 
 func configureBackend() {
