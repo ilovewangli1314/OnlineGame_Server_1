@@ -141,14 +141,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:9847504af04fa422419db184ee038725682f946e94c111b824b0d7a31fb6c82d"
-  name = "github.com/icattlecoder/godaemon"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "f0fff2a3c017c9d9d8520e3c5366946e96e9e081"
-
-[[projects]]
   digest = "1:31e761d97c76151dde79e9d28964a812c46efc5baee4085b86f68f0c654450de"
   name = "github.com/konsorten/go-windows-terminal-sequences"
   packages = ["."]
@@ -513,7 +505,6 @@
   input-imports = [
     "github.com/golang/protobuf/proto",
     "github.com/google/uuid",
-    "github.com/icattlecoder/godaemon",
     "github.com/sirupsen/logrus",
     "github.com/spf13/viper",
     "github.com/topfreegames/pitaya",
