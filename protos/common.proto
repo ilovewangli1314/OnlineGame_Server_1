@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package pbcommon;
+
+// Response represents a common response
+message Response {
+  int32 Code = 1;
+  string Msg = 2;
+}
+
+message RPCMsg{
+  string Route = 1;
+  string Msg = 2;
+}
