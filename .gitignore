@@ -18,7 +18,7 @@
 .idea/
 vendor
 debug
-.vscode
+# .vscode
 
 # vim temp files
 *.swp

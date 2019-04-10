@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/topfreegames/pitaya/component"
 	"github.com/ilovewangli1314/OnlineGame_Server_1/protos"
+	"github.com/topfreegames/pitaya/component"
 )
 
 // ConnectorRemote is a remote that will receive rpc's

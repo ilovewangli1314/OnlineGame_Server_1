@@ -6,12 +6,12 @@ import (
 
 	"strings"
 
+	"github.com/ilovewangli1314/OnlineGame_Server_1/services"
 	"github.com/spf13/viper"
 	"github.com/topfreegames/pitaya"
 	"github.com/topfreegames/pitaya/acceptor"
 	"github.com/topfreegames/pitaya/component"
 	"github.com/topfreegames/pitaya/serialize/protobuf"
-	"github.com/ilovewangli1314/OnlineGame_Server_1/services"
 )
 
 func configureBackend() {
