@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/ilovewangli1314/OnlineGame_Server_1/services"
+	"github.com/ilovewangli1314/OnlineGame_Server_1/services/game"
 	"github.com/spf13/viper"
 	"github.com/topfreegames/pitaya"
 	"github.com/topfreegames/pitaya/acceptor"
@@ -15,16 +16,16 @@ import (
 )
 
 func configureBackend() {
-	room := services.NewRoom()
-	pitaya.Register(room,
-		component.WithName("room"),
-		component.WithNameFunc(strings.ToLower),
-	)
+	// game := game.NewGame()
+	// pitaya.Register(game,
+	// 	component.WithName("game"),
+	// 	component.WithNameFunc(strings.ToLower),
+	// )
 
-	pitaya.RegisterRemote(room,
-		component.WithName("room"),
-		component.WithNameFunc(strings.ToLower),
-	)
+	// pitaya.RegisterRemote(game,
+	// 	component.WithName("game"),
+	// 	component.WithNameFunc(strings.ToLower),
+	// )
 }
 
 func configureFrontend(port int) {
@@ -57,17 +58,13 @@ func main() {
 	// } else {
 	// 	configureFrontend(*port)
 	// }
-	room := services.NewRoom()
-	pitaya.Register(room,
-		component.WithName("room"),
+	entry := game.NewEntry()
+	pitaya.Register(entry,
+		component.WithName("entry"),
 		component.WithNameFunc(strings.ToLower),
 	)
 	ws := acceptor.NewWSAcceptor(fmt.Sprintf(":%d", *port))
 	pitaya.AddAcceptor(ws)
-	// pitaya.RegisterRemote(room,
-	// 	component.WithName("room"),
-	// 	component.WithNameFunc(strings.ToLower),
-	// )
 
 	conf := configApp()
 	pitaya.Configure(*isFrontend, *svType, pitaya.Cluster, map[string]string{}, conf)
@@ -76,7 +73,7 @@ func main() {
 
 func configApp() *viper.Viper {
 	conf := viper.New()
-	conf.SetEnvPrefix("room") // allows using env vars in the CHAT_PITAYA_ format
+	conf.SetEnvPrefix("game") // allows using env vars in the GAME_PITAYA_ format
 	conf.SetDefault("pitaya.buffer.handler.localprocess", 15)
 	conf.Set("pitaya.heartbeat.interval", "15s")
 	conf.Set("pitaya.buffer.agent.messages", 32)

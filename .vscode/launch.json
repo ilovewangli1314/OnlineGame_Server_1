@@ -9,12 +9,13 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${fileDirname}",
+            // "program": "${fileDirname}",
+            "program":"${workspaceFolder}/app.go",
             "buildFlags": "",
             "env": {},
             "args": [
                 "--port", "3250",
-                "--type", "room",
+                "--type", "game",
                 "--frontend", "true"
             ],
             "showLog": true,

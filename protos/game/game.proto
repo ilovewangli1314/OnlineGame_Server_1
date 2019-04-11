@@ -10,8 +10,12 @@ message Hero {
   int32 Defense = 5;
 }
 
+message Team {
+  repeated Hero Heros = 1;  
+}
+
 message Scene {
-  repeated Hero Heros = 1;
+  repeated Team teams = 1;
 }
 
 message Action {
