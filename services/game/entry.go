@@ -4,6 +4,8 @@ import (
 	"context"
 	"sync"
 
+	"github.com/topfreegames/pitaya/session"
+
 	"github.com/google/uuid"
 	pbcommon "github.com/ilovewangli1314/OnlineGame_Server_1/protos"
 	pbgame "github.com/ilovewangli1314/OnlineGame_Server_1/protos/game"
@@ -73,8 +75,11 @@ func (r *Entry) Join(ctx context.Context) (*pbcommon.Response, error) {
 	r.waittingUids = append(r.waittingUids, fakeUID)
 	if len(r.waittingUids) == 2 { // begin game when players is enough
 		game := NewGame(ctx, r.waittingUids, r.uniqueGameID)
-		s.Set("game", game)
+		r.uniqueGameID++
 
+		for _, uid := range r.waittingUids {
+			session.GetSessionByUID(uid).Set("game", game)
+		}
 		r.waittingUids = r.waittingUids[0:0]
 	}
 	r.mutex.Unlock()

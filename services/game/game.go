@@ -42,7 +42,7 @@ func NewGame(ctx context.Context, uids []string, gameID int) *Game {
 	game := &Game{
 		gameID:    gameID,
 		groupName: fmt.Sprintf("game/game/%d", gameID),
-		bgCtx:     context.Background(),
+		bgCtx:     ctx,
 
 		teams:       make([]*Team, 0),
 		pbUseSkills: make([]*pbgame.UseSkill, 0),
@@ -224,7 +224,14 @@ func (g *Game) executeAllSkills() {
 		} else {
 			srcHero := g.getHero(pbUseSkill.SrcHeroId)
 			targetHero := g.getHero(pbUseSkill.TargetHeroId)
-			srcHero.attack(targetHero)
+			if srcHero == nil || targetHero == nil {
+				continue
+			}
+
+			// 只允许攻击敌方队伍
+			if srcHero.belongTeam != targetHero.belongTeam {
+				srcHero.attack(targetHero)
+			}
 		}
 
 		pitaya.GroupBroadcast(g.bgCtx, "game", g.groupName, "onUseSkill", pbUseSkill)
