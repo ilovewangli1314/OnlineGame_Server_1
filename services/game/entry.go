@@ -4,10 +4,10 @@ import (
 	"context"
 	"sync"
 
-	"github.com/topfreegames/pitaya"
-
 	"github.com/google/uuid"
 	pbcommon "github.com/ilovewangli1314/OnlineGame_Server_1/protos"
+	pbgame "github.com/ilovewangli1314/OnlineGame_Server_1/protos/game"
+	"github.com/topfreegames/pitaya"
 
 	"github.com/topfreegames/pitaya/component"
 	"github.com/topfreegames/pitaya/config"
@@ -83,12 +83,12 @@ func (r *Entry) Join(ctx context.Context) (*pbcommon.Response, error) {
 }
 
 // UseSkill handle player use skill request
-func (r *Entry) UseSkill(ctx context.Context) (*pbcommon.Response, error) {
+func (r *Entry) UseSkill(ctx context.Context, msg *pbgame.UseSkill) (*pbcommon.Response, error) {
 	s := pitaya.GetSessionFromCtx(ctx)
 	game := s.Get("game").(*Game)
-	if game == nil {
-		return game.UseSkill(ctx)
+	if game != nil {
+		return game.UseSkill(ctx, msg)
 	}
 
-	return &pbcommon.Response{Code: 1}, nil
+	return &pbcommon.Response{Code: 0}, nil
 }

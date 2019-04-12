@@ -25,6 +25,12 @@ message Action {
   int32 SkillType = 3;
 }
 
+message UseSkill {
+  int32 SrcHeroId = 1;
+  int32 TargetHeroId = 2;
+  int32 SkillType = 3;
+}
+
 message JoinRequest {
 }
 

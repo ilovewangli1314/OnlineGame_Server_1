@@ -22,11 +22,12 @@ type (
 	Game struct {
 		gameID    int
 		groupName string
+		bgCtx     context.Context
 
 		teams       []*Team
 		round       int
 		turnTeamIdx int
-		bgCtx       context.Context
+		pbUseSkills []*pbgame.UseSkill
 
 		seededRandom *common.SeededRandom
 		timer        *timer.Timer
@@ -41,13 +42,14 @@ func NewGame(ctx context.Context, uids []string, gameID int) *Game {
 	game := &Game{
 		gameID:    gameID,
 		groupName: fmt.Sprintf("game/game/%d", gameID),
-	}
-	teams := make([]*Team, 0)
-	teams = append(teams, game.createTeam(0))
-	teams = append(teams, game.createTeam(10000))
-	game.teams = teams
+		bgCtx:     context.Background(),
 
-	game.bgCtx = context.Background()
+		teams:       make([]*Team, 0),
+		pbUseSkills: make([]*pbgame.UseSkill, 0),
+	}
+	game.teams = append(game.teams, game.createTeam(0))
+	game.teams = append(game.teams, game.createTeam(10000))
+
 	// create group for game
 	pitaya.GroupCreate(game.bgCtx, game.groupName)
 	for _, uid := range uids {
@@ -184,17 +186,64 @@ func (g *Game) runAction() {
 		targetTeam.beginRound()
 	}
 
-	pbAction := srcTeam.runAction(targetTeam)
-	// push action info to all players
-	pitaya.GroupBroadcast(g.bgCtx, "game", g.groupName, "onRunAction", pbAction)
+	if len(g.pbUseSkills) > 0 {
+		g.executeAllSkills()
+	} else {
+		pbAction := srcTeam.runAction(targetTeam)
+		// push action info to all players
+		pitaya.GroupBroadcast(g.bgCtx, "game", g.groupName, "onRunAction", pbAction)
+	}
 }
 
 // UseSkill can use a skill to someone
-func (g *Game) UseSkill(ctx context.Context) (*pbcommon.Response, error) {
-	// s := pitaya.GetSessionFromCtx(ctx)
-	// s.Get("game").Us
+func (g *Game) UseSkill(ctx context.Context, msg *pbgame.UseSkill) (*pbcommon.Response, error) {
+	g.pbUseSkills = append(g.pbUseSkills, msg)
 
-	return &pbcommon.Response{Code: 0}, nil
+	return &pbcommon.Response{Code: 0, Msg: ""}, nil
+}
+
+// execute all skills
+func (g *Game) executeAllSkills() {
+	for _, pbUseSkill := range g.pbUseSkills {
+		// in case aoe skill
+		if pbUseSkill.TargetHeroId < 0 {
+			var srcHero *Hero
+			var targetTeam *Team
+			for tIdx, team := range g.teams {
+				for _, hero := range team.heros {
+					if hero.data.Id == pbUseSkill.SrcHeroId {
+						srcHero = hero
+						targetTeam = g.teams[(tIdx+1)%len(g.teams)]
+					}
+				}
+			}
+
+			for _, hero := range targetTeam.heros {
+				srcHero.attack(hero)
+			}
+		} else {
+			srcHero := g.getHero(pbUseSkill.SrcHeroId)
+			targetHero := g.getHero(pbUseSkill.TargetHeroId)
+			srcHero.attack(targetHero)
+		}
+
+		pitaya.GroupBroadcast(g.bgCtx, "game", g.groupName, "onUseSkill", pbUseSkill)
+	}
+
+	g.pbUseSkills = g.pbUseSkills[0:0]
+}
+
+// get hero by heroId
+func (g *Game) getHero(heroID int32) *Hero {
+	for _, team := range g.teams {
+		for _, hero := range team.heros {
+			if hero.data.Id == heroID {
+				return hero
+			}
+		}
+	}
+
+	return nil
 }
 
 // // SendRPC sends rpc
