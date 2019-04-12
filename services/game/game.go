@@ -7,11 +7,12 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/ilovewangli1314/OnlineGame_Server_1/services/common"
+
 	pbgame "github.com/ilovewangli1314/OnlineGame_Server_1/protos/game"
 
 	pbcommon "github.com/ilovewangli1314/OnlineGame_Server_1/protos"
 	"github.com/topfreegames/pitaya"
-	"github.com/topfreegames/pitaya/component"
 	"github.com/topfreegames/pitaya/timer"
 )
 
@@ -19,17 +20,16 @@ type (
 	// Game represents a component that contains a bundle of game related handler
 	// like Join/Message
 	Game struct {
-		component.Base
-		timer *timer.Timer
-		Stats *Stats
-
 		gameID    int
 		groupName string
-		pbTeams   []*pbgame.Team
 
 		teams       []*Team
 		round       int
 		turnTeamIdx int
+		bgCtx       context.Context
+
+		seededRandom *common.SeededRandom
+		timer        *timer.Timer
 	}
 )
 
@@ -39,59 +39,60 @@ func NewGame(ctx context.Context, uids []string, gameID int) *Game {
 	// 	GetSessionByUID(uid)
 	// }
 	game := &Game{
-		Stats:     &Stats{},
 		gameID:    gameID,
 		groupName: fmt.Sprintf("game/game/%d", gameID),
 	}
-	teams := make([]*pbgame.Team, 0)
-	teams = append(teams, game.createTeam())
-	teams = append(teams, game.createTeam())
-	game.pbTeams = teams
+	teams := make([]*Team, 0)
+	teams = append(teams, game.createTeam(0))
+	teams = append(teams, game.createTeam(10000))
+	game.teams = teams
 
+	game.bgCtx = context.Background()
 	// create group for game
-	pitaya.GroupCreate(context.Background(), game.groupName)
+	pitaya.GroupCreate(game.bgCtx, game.groupName)
 	for _, uid := range uids {
 		pitaya.GroupAddMember(ctx, game.groupName, uid)
 	}
 	// push game begin to all players in group
-	pitaya.GroupBroadcast(ctx, "game", game.groupName, "onGameBegin", &pbgame.Scene{Teams: teams})
+	game.seededRandom = &common.SeededRandom{RandomSeed: int32(time.Now().Unix())}
+	pbScene := &pbgame.Scene{
+		RandomSeed: game.seededRandom.RandomSeed,
+		Teams:      game.getPbTeams(),
+	}
+	pitaya.GroupBroadcast(game.bgCtx, "game", game.groupName, "onGameBegin", pbScene)
+
+	// begin timer for game actions
+	game.timer = pitaya.NewTimer(time.Second, func() {
+		game.runAction()
+	})
 
 	return game
 }
 
-// Init runs on service initialization
-func (g *Game) Init() {
-}
-
-// AfterInit component lifetime callback
-func (g *Game) AfterInit() {
-	g.timer = pitaya.NewTimer(time.Second, func() {
-		g.runAction()
-	})
-
-	// g.timer = pitaya.NewTimer(time.Minute, func() {
-	// 	count, err := pitaya.GroupCountMembers(context.Background(), "game")
-	// 	println("UserCount: Time=>", time.Now().String(), "Count=>", count, "Error=>", err)
-	// 	println("OutboundBytes", g.Stats.outboundBytes)
-	// 	println("InboundBytes", g.Stats.outboundBytes)
-	// })
-}
-
-func (g *Game) createTeam() *pbgame.Team {
-	team := pbgame.Team{}
-	cnt := 6
-	team.Heros = make([]*pbgame.Hero, cnt)
-	for idx := 0; idx < cnt; idx++ {
-		team.Heros[idx] = &pbgame.Hero{
-			Id:      int32(g.gameID + idx),
+func (g *Game) createTeam(heroBaseIdx int) *Team {
+	pbTeam := &pbgame.Team{}
+	pbTeam.Heros = make([]*pbgame.Hero, 0)
+	for idx := 0; idx < 6; idx++ {
+		pbHero := &pbgame.Hero{
+			Id:      int32(heroBaseIdx + idx),
 			Hp:      int32(30 + math.Round(5*rand.Float64())),
 			Mp:      int32(100 + math.Round(5*rand.Float64())),
 			Attack:  int32(10 + math.Round(5*rand.Float64())),
 			Defense: int32(3 + math.Round(2*rand.Float64())),
 		}
+		pbTeam.Heros = append(pbTeam.Heros, pbHero)
 	}
 
-	return &team
+	return NewTeam(pbTeam)
+}
+
+func (g *Game) getPbTeams() []*pbgame.Team {
+	pbTeams := make([]*pbgame.Team, 0)
+	for _, team := range g.teams {
+		pbTeams = append(pbTeams, team.data)
+	}
+
+	return pbTeams
 }
 
 func reply(code int32, msg string) *pbcommon.Response {
@@ -168,14 +169,12 @@ func (g *Game) runAction() {
 	srcTeam := teams[g.turnTeamIdx]
 	if srcTeam.isEmpty() {
 		g.timer.Stop()
-
 		return
 	}
 
 	targetTeam := teams[(g.turnTeamIdx+1)%teamCnt]
 	if targetTeam.isEmpty() {
 		g.timer.Stop()
-
 		return
 	}
 
@@ -185,9 +184,12 @@ func (g *Game) runAction() {
 		targetTeam.beginRound()
 	}
 
-	srcTeam.runAction(targetTeam)
+	pbAction := srcTeam.runAction(targetTeam)
+	// push action info to all players
+	pitaya.GroupBroadcast(g.bgCtx, "game", g.groupName, "onRunAction", pbAction)
 }
 
+// UseSkill can use a skill to someone
 func (g *Game) UseSkill(ctx context.Context) (*pbcommon.Response, error) {
 	// s := pitaya.GetSessionFromCtx(ctx)
 	// s.Get("game").Us

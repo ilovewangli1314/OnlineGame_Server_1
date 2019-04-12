@@ -12,8 +12,15 @@ type (
 	}
 )
 
-func (h *Hero) die() {
+// NewHero return a hero
+func NewHero(data *pbgame.Hero) *Hero {
+	return &Hero{
+		data: data,
+	}
+}
 
+func (h *Hero) die() {
+	h.belongTeam.onHeroDie(h)
 }
 
 func (h *Hero) attack(target *Hero) {

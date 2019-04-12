@@ -15,7 +15,8 @@ message Team {
 }
 
 message Scene {
-  repeated Team teams = 1;
+  int32 randomSeed = 1;
+  repeated Team teams = 2;
 }
 
 message Action {
