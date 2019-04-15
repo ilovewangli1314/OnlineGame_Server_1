@@ -75,7 +75,9 @@ func configApp() *viper.Viper {
 	conf := viper.New()
 	conf.SetEnvPrefix("game") // allows using env vars in the GAME_PITAYA_ format
 	conf.SetDefault("pitaya.buffer.handler.localprocess", 15)
-	conf.Set("pitaya.heartbeat.interval", "15s")
+	// Fixme: for test
+	// conf.Set("pitaya.heartbeat.interval", "15s")
+	conf.Set("pitaya.heartbeat.interval", "150s")
 	conf.Set("pitaya.buffer.agent.messages", 32)
 	conf.Set("pitaya.handler.messages.compression", false)
 	return conf

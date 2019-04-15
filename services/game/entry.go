@@ -57,13 +57,13 @@ func NewEntry() *Entry {
 }
 
 // Init runs on service initialization
-func (r *Entry) Init() {
+func (e *Entry) Init() {
 	gsi := groups.NewMemoryGroupService(config.NewConfig())
 	pitaya.InitGroups(gsi)
 }
 
 // Join handle user join game request
-func (r *Entry) Join(ctx context.Context) (*pbcommon.Response, error) {
+func (e *Entry) Join(ctx context.Context) (*pbcommon.Response, error) {
 	fakeUID := uuid.New().String() // every join use a new uuid !!!
 	s := pitaya.GetSessionFromCtx(ctx)
 	err := s.Bind(ctx, fakeUID) // binding uid to current session
@@ -71,29 +71,48 @@ func (r *Entry) Join(ctx context.Context) (*pbcommon.Response, error) {
 		return &pbcommon.Response{Code: 1}, err
 	}
 
-	r.mutex.Lock()
-	r.waittingUids = append(r.waittingUids, fakeUID)
-	if len(r.waittingUids) == 2 { // begin game when players is enough
-		game := NewGame(ctx, r.waittingUids, r.uniqueGameID)
-		r.uniqueGameID++
+	e.mutex.Lock()
+	e.waittingUids = append(e.waittingUids, fakeUID)
+	if len(e.waittingUids) == 2 { // begin game when players is enough
+		game := NewGame(ctx, e.uniqueGameID, e.waittingUids)
+		e.uniqueGameID++
 
-		for _, uid := range r.waittingUids {
+		for _, uid := range e.waittingUids {
 			session.GetSessionByUID(uid).Set("game", game)
 		}
-		r.waittingUids = r.waittingUids[0:0]
+		e.waittingUids = e.waittingUids[0:0]
 	}
-	r.mutex.Unlock()
+	e.mutex.Unlock()
 
 	return &pbcommon.Response{Code: 0}, nil
 }
 
 // UseSkill handle player use skill request
-func (r *Entry) UseSkill(ctx context.Context, msg *pbgame.UseSkill) (*pbcommon.Response, error) {
+func (e *Entry) UseSkill(ctx context.Context, msg *pbgame.UseSkill) (*pbcommon.Response, error) {
 	s := pitaya.GetSessionFromCtx(ctx)
 	game := s.Get("game").(*Game)
 	if game != nil {
 		return game.UseSkill(ctx, msg)
 	}
 
+	return &pbcommon.Response{Code: 0}, nil
+}
+
+// RestartGame will restart a new game
+func (e *Entry) RestartGame(ctx context.Context) (*pbcommon.Response, error) {
+	s := pitaya.GetSessionFromCtx(ctx)
+	game := s.Get("game").(*Game)
+
+	// create a new game instance
+	e.mutex.Lock()
+	newGame := NewGame(ctx, e.uniqueGameID, game.uids)
+	e.uniqueGameID++
+	e.mutex.Unlock()
+
+	for _, uid := range newGame.uids {
+		session.GetSessionByUID(uid).Set("game", newGame)
+	}
+
+	game.stopGame()
 	return &pbcommon.Response{Code: 0}, nil
 }

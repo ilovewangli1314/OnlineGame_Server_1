@@ -21,6 +21,7 @@ type (
 	// like Join/Message
 	Game struct {
 		gameID    int
+		uids      []string
 		groupName string
 		bgCtx     context.Context
 
@@ -35,12 +36,13 @@ type (
 )
 
 // NewGame returns a new game
-func NewGame(ctx context.Context, uids []string, gameID int) *Game {
+func NewGame(ctx context.Context, gameID int, uids []string) *Game {
 	// for _, uid := range uids {
 	// 	GetSessionByUID(uid)
 	// }
 	game := &Game{
 		gameID:    gameID,
+		uids:      uids,
 		groupName: fmt.Sprintf("game/game/%d", gameID),
 		bgCtx:     ctx,
 
@@ -55,13 +57,19 @@ func NewGame(ctx context.Context, uids []string, gameID int) *Game {
 	for _, uid := range uids {
 		pitaya.GroupAddMember(ctx, game.groupName, uid)
 	}
-	// push game begin to all players in group
 	game.seededRandom = &common.SeededRandom{RandomSeed: int32(time.Now().Unix())}
+	// 分主次方分别push游戏开始信息
+	hostTeams := game.getPbTeams()
 	pbScene := &pbgame.Scene{
 		RandomSeed: game.seededRandom.RandomSeed,
-		Teams:      game.getPbTeams(),
+		Teams:      hostTeams,
 	}
-	pitaya.GroupBroadcast(game.bgCtx, "game", game.groupName, "onGameBegin", pbScene)
+	pitaya.SendPushToUsers("onGameBegin", pbScene, uids[0:1], "game")
+	pbScene = &pbgame.Scene{
+		RandomSeed: game.seededRandom.RandomSeed,
+		Teams:      []*pbgame.Team{hostTeams[1], hostTeams[0]},
+	}
+	pitaya.SendPushToUsers("onGameBegin", pbScene, uids[1:2], "game")
 
 	// begin timer for game actions
 	game.timer = pitaya.NewTimer(time.Second, func() {
@@ -209,16 +217,21 @@ func (g *Game) executeAllSkills() {
 		if pbUseSkill.TargetHeroId < 0 {
 			var srcHero *Hero
 			var targetTeam *Team
+
+		teamLoop:
 			for tIdx, team := range g.teams {
 				for _, hero := range team.heros {
 					if hero.data.Id == pbUseSkill.SrcHeroId {
 						srcHero = hero
 						targetTeam = g.teams[(tIdx+1)%len(g.teams)]
+
+						break teamLoop
 					}
 				}
 			}
 
-			for _, hero := range targetTeam.heros {
+			tempHeros := targetTeam.heros[:]
+			for _, hero := range tempHeros {
 				srcHero.attack(hero)
 			}
 		} else {
@@ -251,6 +264,10 @@ func (g *Game) getHero(heroID int32) *Hero {
 	}
 
 	return nil
+}
+
+func (g *Game) stopGame() {
+	g.timer.Stop()
 }
 
 // // SendRPC sends rpc
