@@ -74,13 +74,18 @@ func (e *Entry) Join(ctx context.Context) (*pbcommon.Response, error) {
 	e.mutex.Lock()
 	e.waittingUids = append(e.waittingUids, fakeUID)
 	if len(e.waittingUids) == 2 { // begin game when players is enough
-		game := NewGame(ctx, e.uniqueGameID, e.waittingUids)
-		e.uniqueGameID++
+		// 需要判断同一个客户端重复进入
+		if session.GetSessionByUID(e.waittingUids[0]) == nil {
+			e.waittingUids = e.waittingUids[1:2]
+		} else {
+			game := NewGame(ctx, e.uniqueGameID, e.waittingUids)
+			e.uniqueGameID++
 
-		for _, uid := range e.waittingUids {
-			session.GetSessionByUID(uid).Set("game", game)
+			for _, uid := range e.waittingUids {
+				session.GetSessionByUID(uid).Set("game", game)
+			}
+			e.waittingUids = e.waittingUids[0:0]
 		}
-		e.waittingUids = e.waittingUids[0:0]
 	}
 	e.mutex.Unlock()
 
